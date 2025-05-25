@@ -94,7 +94,7 @@ class H5Link implements ApiArrayInterface
     private ?string $updatedFromIp = null;
 
     #[Ignore]
-    #[ORM\OneToOne(inversedBy: 'h5Link', targetEntity: Coupon::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Coupon::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Coupon $coupon = null;
 
