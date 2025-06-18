@@ -15,26 +15,13 @@ use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Creatable;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
-use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: 'H5外链')]
-#[Deletable]
-#[Editable]
-#[Creatable]
 #[ORM\Entity(repositoryClass: H5LinkRepository::class)]
 #[ORM\Table(name: 'coupon_h5_link', options: ['comment' => 'H5外链'])]
 class H5Link implements ApiArrayInterface
 {
     use TimestampableAware;
 
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -62,7 +49,6 @@ class H5Link implements ApiArrayInterface
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Coupon $coupon = null;
 
-    #[FormField]
     #[Groups(['restful_read'])]
     #[ORM\Column(type: Types::TEXT, options: ['comment' => 'H5链接'])]
     private ?string $url = null;
