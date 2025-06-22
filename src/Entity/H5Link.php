@@ -13,28 +13,20 @@ use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 #[ORM\Entity(repositoryClass: H5LinkRepository::class)]
 #[ORM\Table(name: 'coupon_h5_link', options: ['comment' => 'H5外链'])]
-class H5Link implements ApiArrayInterface
+class H5Link implements ApiArrayInterface, \Stringable
 {
     use TimestampableAware;
+    use BlameableAware;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
     #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
     private ?string $id = null;
-
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
 
     #[CreateIpColumn]
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
@@ -56,30 +48,6 @@ class H5Link implements ApiArrayInterface
     public function getId(): ?string
     {
         return $this->id;
-    }
-
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
     }
 
     public function setCreatedFromIp(?string $createdFromIp): self
@@ -138,5 +106,10 @@ class H5Link implements ApiArrayInterface
             'updateTime' => $this->getUpdateTime()?->format('Y-m-d H:i:s'),
             'url' => $this->getUrl(),
         ];
+    }
+
+    public function __toString(): string
+    {
+        return sprintf('H5Link#%s', $this->getId() ?? 'new');
     }
 }
