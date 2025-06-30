@@ -80,7 +80,6 @@ class H5LinkTest extends TestCase
 
         $apiArray = $this->h5Link->retrieveApiArray();
 
-        $this->assertIsArray($apiArray);
         $this->assertArrayHasKey('id', $apiArray);
         $this->assertArrayHasKey('createTime', $apiArray);
         $this->assertArrayHasKey('updateTime', $apiArray);

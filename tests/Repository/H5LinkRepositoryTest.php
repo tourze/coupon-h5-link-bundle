@@ -33,11 +33,6 @@ class H5LinkRepositoryTest extends TestCase
 
         $this->assertCount(1, $constructorParams);
         $this->assertSame('registry', $constructorParams[0]->getName());
-
-        $this->assertTrue(method_exists($this->repository, 'find'));
-        $this->assertTrue(method_exists($this->repository, 'findAll'));
-        $this->assertTrue(method_exists($this->repository, 'findBy'));
-        $this->assertTrue(method_exists($this->repository, 'findOneBy'));
     }
 
     public function testDocblockMethods(): void
