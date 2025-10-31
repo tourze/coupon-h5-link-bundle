@@ -6,3 +6,9 @@ services:
 
   Tourze\CouponH5LinkBundle\Repository\:
     resource: '../../Repository/'
+
+  Tourze\CouponH5LinkBundle\Controller\:
+    resource: '../../Controller/'
+
+  Tourze\CouponH5LinkBundle\Service\:
+    resource: '../../Service/'

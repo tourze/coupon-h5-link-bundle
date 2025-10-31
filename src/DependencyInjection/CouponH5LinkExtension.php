@@ -1,20 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tourze\CouponH5LinkBundle\DependencyInjection;
 
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class CouponH5LinkExtension extends Extension
+class CouponH5LinkExtension extends AutoExtension
 {
-    public function load(array $configs, ContainerBuilder $container): void
+    protected function getConfigDir(): string
     {
-        $loader = new YamlFileLoader(
-            $container,
-            new FileLocator(__DIR__ . '/../Resources/config')
-        );
-        $loader->load('services.yaml');
+        return __DIR__ . '/../Resources/config';
     }
 }

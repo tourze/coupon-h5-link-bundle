@@ -2,28 +2,25 @@
 
 namespace Tourze\CouponH5LinkBundle\Tests\DependencyInjection;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Tourze\CouponH5LinkBundle\DependencyInjection\CouponH5LinkExtension;
+use Tourze\PHPUnitSymfonyUnitTest\AbstractDependencyInjectionExtensionTestCase;
 
-class CouponH5LinkExtensionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(CouponH5LinkExtension::class)]
+final class CouponH5LinkExtensionTest extends AbstractDependencyInjectionExtensionTestCase
 {
     private CouponH5LinkExtension $extension;
+
     private ContainerBuilder $container;
 
     public function testIsInstanceOfExtension(): void
     {
         $this->assertInstanceOf(Extension::class, $this->extension);
-    }
-
-    public function testLoad(): void
-    {
-        $configs = [];
-
-        $this->extension->load($configs, $this->container);
-
-        $this->assertTrue(true);
     }
 
     public function testLoadWithEmptyConfig(): void
@@ -32,7 +29,7 @@ class CouponH5LinkExtensionTest extends TestCase
 
         $this->extension->load($configs, $this->container);
 
-        $this->assertTrue(true);
+        $this->assertInstanceOf(ContainerBuilder::class, $this->container);
     }
 
     public function testLoadWithMultipleConfigs(): void
@@ -41,7 +38,7 @@ class CouponH5LinkExtensionTest extends TestCase
 
         $this->extension->load($configs, $this->container);
 
-        $this->assertTrue(true);
+        $this->assertInstanceOf(ContainerBuilder::class, $this->container);
     }
 
     public function testGetAlias(): void
@@ -64,7 +61,9 @@ class CouponH5LinkExtensionTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->extension = new CouponH5LinkExtension();
         $this->container = new ContainerBuilder();
+        $this->container->setParameter('kernel.environment', 'test');
     }
 }

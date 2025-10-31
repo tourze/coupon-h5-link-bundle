@@ -1,23 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tourze\CouponH5LinkBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Tourze\CouponH5LinkBundle\Entity\H5Link;
-
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 
 /**
- * @method H5Link|null find($id, $lockMode = null, $lockVersion = null)
- * @method H5Link|null findOneBy(array $criteria, array $orderBy = null)
- * @method H5Link[]    findAll()
- * @method H5Link[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<H5Link>
  */
+#[AsRepository(entityClass: H5Link::class)]
 class H5LinkRepository extends ServiceEntityRepository
 {
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, H5Link::class);
+    }
+
+    public function save(H5Link $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(H5Link $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

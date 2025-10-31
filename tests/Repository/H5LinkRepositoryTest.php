@@ -2,54 +2,128 @@
 
 namespace Tourze\CouponH5LinkBundle\Tests\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\CouponCoreBundle\Entity\Coupon;
 use Tourze\CouponH5LinkBundle\Entity\H5Link;
 use Tourze\CouponH5LinkBundle\Repository\H5LinkRepository;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
 
-class H5LinkRepositoryTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(H5LinkRepository::class)]
+#[RunTestsInSeparateProcesses]
+final class H5LinkRepositoryTest extends AbstractRepositoryTestCase
 {
     private H5LinkRepository $repository;
-    private ManagerRegistry $registry;
 
-    public function testIsInstanceOfServiceEntityRepository(): void
+    protected function onSetUp(): void
     {
-        $this->assertInstanceOf(ServiceEntityRepository::class, $this->repository);
+        $this->repository = self::getService(H5LinkRepository::class);
     }
 
-    public function testConstructor(): void
+    private function createTestCoupon(string $name = 'Test Coupon'): Coupon
+    {
+        $coupon = new Coupon();
+        $coupon->setName($name);
+        $coupon->setValid(true);
+        $coupon->setExpireDay(30);
+
+        self::getEntityManager()->persist($coupon);
+        self::getEntityManager()->flush();
+
+        return $coupon;
+    }
+
+    public function testIsInstanceOfH5LinkRepository(): void
     {
         $this->assertInstanceOf(H5LinkRepository::class, $this->repository);
     }
 
-    public function testEntityClass(): void
+    public function testSave(): void
     {
-        $expectedEntityClass = H5Link::class;
+        $coupon = $this->createTestCoupon();
 
-        $reflection = new \ReflectionClass($this->repository);
-        $constructor = $reflection->getConstructor();
-        $constructorParams = $constructor->getParameters();
+        $h5Link = new H5Link();
+        $h5Link->setUrl('https://example.com/test');
+        $h5Link->setCoupon($coupon);
 
-        $this->assertCount(1, $constructorParams);
-        $this->assertSame('registry', $constructorParams[0]->getName());
+        $this->repository->save($h5Link);
+        $this->assertNotNull($h5Link->getId());
     }
 
-    public function testDocblockMethods(): void
+    public function testRemove(): void
     {
-        $reflection = new \ReflectionClass($this->repository);
-        $docComment = $reflection->getDocComment();
+        $coupon = $this->createTestCoupon();
 
-        $this->assertNotFalse($docComment);
-        $this->assertStringContainsString('@method H5Link|null find($id, $lockMode = null, $lockVersion = null)', $docComment);
-        $this->assertStringContainsString('@method H5Link|null findOneBy(array $criteria, array $orderBy = null)', $docComment);
-        $this->assertStringContainsString('@method H5Link[]    findAll()', $docComment);
-        $this->assertStringContainsString('@method H5Link[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)', $docComment);
+        $h5Link = new H5Link();
+        $h5Link->setUrl('https://example.com/test');
+        $h5Link->setCoupon($coupon);
+
+        $this->repository->save($h5Link);
+        $id = $h5Link->getId();
+
+        $this->repository->remove($h5Link);
+        $this->assertNull($this->repository->find($id));
     }
 
-    protected function setUp(): void
+    public function testFindOneByWithOrderByClause(): void
     {
-        $this->registry = $this->createMock(ManagerRegistry::class);
-        $this->repository = new H5LinkRepository($this->registry);
+        $result = $this->repository->findOneBy([], ['url' => 'ASC']);
+        $this->assertTrue(null === $result || $result instanceof H5Link);
+    }
+
+    public function testFindOneByAssociationCouponShouldReturnMatchingEntity(): void
+    {
+        $coupon = $this->createTestCoupon();
+
+        $h5Link = new H5Link();
+        $h5Link->setUrl('https://example.com/test');
+        $h5Link->setCoupon($coupon);
+
+        $this->repository->save($h5Link);
+
+        $result = $this->repository->findOneBy(['coupon' => $coupon]);
+        $this->assertSame($h5Link, $result);
+    }
+
+    public function testCountByAssociationCouponShouldReturnCorrectNumber(): void
+    {
+        $coupon1 = $this->createTestCoupon('Test Coupon 1');
+        $coupon2 = $this->createTestCoupon('Test Coupon 2');
+
+        $h5Link1 = new H5Link();
+        $h5Link1->setUrl('https://example1.com');
+        $h5Link1->setCoupon($coupon1);
+
+        $h5Link2 = new H5Link();
+        $h5Link2->setUrl('https://example2.com');
+        $h5Link2->setCoupon($coupon2);
+
+        $this->repository->save($h5Link1);
+        $this->repository->save($h5Link2);
+
+        $count = $this->repository->count(['coupon' => $coupon1]);
+        $this->assertSame(1, $count);
+    }
+
+    protected function getRepository(): H5LinkRepository
+    {
+        return $this->repository;
+    }
+
+    protected function createNewEntity(): object
+    {
+        $coupon = new Coupon();
+        $coupon->setName('测试优惠券');
+        $coupon->setValid(true);
+        $coupon->setExpireDay(30);
+
+        $h5Link = new H5Link();
+        $h5Link->setCoupon($coupon);
+        $h5Link->setUrl('https://example.com/test_' . uniqid());
+
+        return $h5Link;
     }
 }
