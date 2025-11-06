@@ -95,8 +95,8 @@ final class H5LinkCrudControllerTest extends AbstractEasyAdminControllerTestCase
         $controller = new H5LinkCrudController();
         // 测试配置方法可以被调用而不报错
         $crud = $controller->configureCrud(Crud::new());
-        // 测试配置对象返回的是非Crud实例（测试配置方法可以正常执行）
-        $this->expectNotToPerformAssertions();
+        // 验证返回的是Crud配置对象
+        self::assertInstanceOf(Crud::class, $crud);
     }
 
     public function testEditH5Link(): void
@@ -140,8 +140,8 @@ final class H5LinkCrudControllerTest extends AbstractEasyAdminControllerTestCase
         // Test that filters can be configured
         $controller = new H5LinkCrudController();
         $filters = $controller->configureFilters(Filters::new());
-        // 测试配置对象能够正确创建（测试配置方法可以正常执行）
-        $this->expectNotToPerformAssertions();
+        // 验证返回的是Filters配置对象
+        self::assertInstanceOf(Filters::class, $filters);
     }
 
     public function testEntityFqcnConfiguration(): void
@@ -155,8 +155,8 @@ final class H5LinkCrudControllerTest extends AbstractEasyAdminControllerTestCase
         // Test that CRUD configuration is available
         $controller = new H5LinkCrudController();
         $actions = $controller->configureActions(Actions::new());
-        // 测试配置对象能够正确创建（测试配置方法可以正常执行）
-        $this->expectNotToPerformAssertions();
+        // 验证返回的是Actions配置对象
+        self::assertInstanceOf(Actions::class, $actions);
     }
 
     public function testControllerRoutePathAttribute(): void
